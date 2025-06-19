@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSafe Adventures</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2a, #2a105a);
+            color: #f0f0fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+            transition: background 1.5s ease;
+        }
+        body.progress-50 {
+            background: linear-gradient(135deg, #1a1a2a, #cc00ff);
+        }
+        body.progress-100 {
+            background: linear-gradient(135deg, #1a1a2a, #ff0066);
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 255, 204, 0.05));
+            animation: matrixRain 12s linear infinite;
+            z-index: -1;
+            opacity: 0.08;
+        }
+        @keyframes matrixRain {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+        .container {
+            background: rgba(20, 30, 50, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0, 255, 204, 0.2);
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffcc;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+            margin: 15px 0;
+            font-size: 2.8em;
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: #cc00ff;
+            font-weight: 600;
+            font-size: 1.6em;
+            text-shadow: 0 0 6px rgba(204, 0, 255, 0.3);
+            margin: 10px 0;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        button {
+            background: linear-gradient(45deg, #00ffcc, #cc00ff);
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #f0f0fa;
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: pulseGlow 1.8s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 8px rgba(0, 255, 204, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
+            100% { box-shadow: 0 0 8px rgba(0, 255, 204, 0.3); }
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5), 0 0 10px rgba(204, 0, 255, 0.4);
+            background: linear-gradient(45deg, #00ff88, #ff0066);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button:disabled {
+            background: linear-gradient(45deg, #444, #666);
+            cursor: not-allowed;
+            box-shadow: none;
+            animation: none;
+        }
+        .back-button {
+            background: linear-gradient(45deg, #ff0066, #cc0055);
+            box-shadow: 0 0 8px rgba(255, 0, 102, 0.3);
+        }
+        .back-button:hover {
+            background: linear-gradient(45deg, #ff0066, #ff007f);
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.5);
+        }
+        .restart-button {
+            background: linear-gradient(45deg, #cc00ff, #ff0066);
+        }
+        .wrong {
+            animation: shake 0.3s;
+            border: 2px solid #ff0066;
+            box-shadow: 0 0 12px rgba(255, 0, 102, 0.4);
+        }
+        .correct {
+            animation: correctAnimation 0.8s;
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            50% { transform: translateX(4px); }
+            75% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes correctAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        #passwordTester, #feedback, #leaderboard, #miniGame, #rewardScreen {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #00ffcc;
+            width: 85%;
+            background-color: rgba(10, 10, 40, 0.7);
+            color: #f0f0fa;
+            font-size: 1.1em;
+            font-family: 'Poppins', sans-serif;
+            transition: box-shadow 0.2s;
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+        input::placeholder {
+            color: #aaaaaa;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #3a3a5a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+        .progress {
+            height: 20px;
+            background: linear-gradient(90deg, #00ffcc, #ff0066);
+            width: 0%;
+            transition: width 0.4s ease-in-out;
+            box-shadow: 0 0 6px rgba(0, 255, 204, 0.3);
+        }
+        .fade-in {
+            animation: fadeIn 1.2s ease-in-out;
+        }
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        #timer.low-time {
+            color: #ff0066;
+            animation: pulse 0.8s infinite;
+            text-shadow: 0 0 6px rgba(255, 0, 102, 0.5);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        #feedback {
+            background-color: rgba(0, 255, 204, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+        #feedback.wrong {
+            border-color: #ff0066;
+            box-shadow: 0 0 12px rgba(255, 0, 102, 0.4);
+        }
+        #feedback.correct {
+            border-color: #00ff88;
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+        }
+        #leaderboard ul, #rewardScreen ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        #leaderboard li, #rewardScreen li {
+            background: linear-gradient(45deg, rgba(0, 255, 204, 0.15), rgba(204, 0, 255, 0.15));
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            font-size: 1em;
+        }
+        #leaderboard li:nth-child(odd), #rewardScreen li:nth-child(odd) {
+            background: linear-gradient(45deg, rgba(204, 0, 255, 0.15), rgba(0, 255, 204, 0.15));
+        }
+        .sound-toggle {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .sound-toggle label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+            color: #00ffcc;
+            background-color: rgba(0, 255, 204, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid #00ffcc;
+            transition: box-shadow 0.2s;
+            animation: pulseGlow 1.8s infinite;
+        }
+        .sound-toggle label:hover {
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+        }
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 50, 0.6), rgba(50, 10, 80, 0.6));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        #splash h1 {
+            font-size: 3.5em;
+            color: #00ffcc;
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+            animation: scaleText 1.8s infinite;
+        }
+        #splash p {
+            font-size: 1.6em;
+            color: #cc00ff;
+            text-shadow: 0 0 10px rgba(204, 0, 255, 0.5);
+            margin: 10px 0;
+        }
+        #splash input {
+            margin: 15px 0;
+            width: 80%;
+            max-width: 280px;
+        }
+        .character-selection {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+            width: 80%;
+        }
+        .character-card {
+            background: rgba(0, 255, 204, 0.1);
+            border: 2px solid #00ffcc;
+            border-radius: 8px;
+            margin: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100px;
+            text-align: center;
+            font-size: 1em;
+        }
+        .character-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        }
+        .character-card.selected {
+            border-color: #ff0066;
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.4);
+        }
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 255, 204, 0.2);
+            border: 2px solid #00ffcc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            transition: transform 0.2s;
+        }
+        .badge:hover {
+            transform: scale(1.1);
+        }
+        .fade-out {
+            animation: fadeOut 1s forwards;
+        }
+        @keyframes scaleText {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        #game button:nth-child(3) { /* True button */
+            background: linear-gradient(45deg, #00ffcc, #00ff88);
+        }
+        #game button:nth-child(4) { /* False button */
+            background: linear-gradient(45deg, #cc00ff, #ff0066);
+        }
+        .bottom-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .credits {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffcc;
+            text-shadow: 0 0 6px rgba(0, 255, 204, 0.4);
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        .credits span {
+            color: #cc00ff;
+            text-shadow: 0 0 6px rgba(204, 0, 255, 0.4);
+        }
+        .tooltip {
+            position: relative;
+            cursor: help;
+            text-decoration: underline dotted #cc00ff;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 30, 50, 0.9);
+            color: #f0f0fa;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #00ffcc;
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+            font-size: 0.85em;
+            width: 180px;
+            text-align: left;
+            z-index: 1000;
+            white-space: normal;
+        }
+        hr {
+            border: 1px solid #00ffcc;
+            margin: 8px 0;
+            width: 80%;
+        }
+        #miniGame {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            gap: 8px;
+            justify-content: center;
+            margin: 15px auto;
+        }
+        .card {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 255, 204, 0.15);
+            border: 2px solid #00ffcc;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-size: 1.5em;
+        }
+        .card.flipped {
+            background: #f0f0fa;
+            transform: rotateY(180deg);
+        }
+        .card.matched {
+            background: #00ff88;
+            border-color: #00ff88;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+        }
+        .card span {
+            display: none;
+        }
+        .card.flipped span, .card.matched span {
+            display: block;
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.3;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+                width: 95%;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            #splash h1 {
+                font-size: 2.8em;
+            }
+            #splash p {
+                font-size: 1.4em;
+            }
+            #splash input {
+                width: 90%;
+            }
+            button {
+                padding: 10px 18px;
+                font-size: 1em;
+            }
+            input {
+                width: 90%;
+                font-size: 1em;
+            }
+            p {
+                font-size: 1.1em;
+            }
+            #leaderboard li, #rewardScreen li {
+                font-size: 0.9em;
+            }
+            .character-card {
+                width: 90px;
+                font-size: 0.9em;
+            }
+            .badge {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            #miniGame {
+                grid-template-columns: repeat(4, 60px);
+                gap: 6px;
+            }
+            .card {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2em;
+            }
+            .tooltip:hover::after {
+                width: 140px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div id="splash" style="display: flex;">
+        <h1>CyberSafe</h1>
+        <p>Pick Your Cyber Hero!</p>
+        <input id="playerName" placeholder="Enter your name" oninput="validateName()">
+        <div class="character-selection">
+            <div class="character-card" data-character="CyberFox" onclick="selectCharacter('CyberFox')">CyberFox 🦊</div>
+            <div class="character-card" data-character="NeonPanda" onclick="selectCharacter('NeonPanda')">NeonPanda 🐼</div>
+            <div class="character-card" data-character="StarBot" onclick="selectCharacter('StarBot')">StarBot 🤖</div>
+            <div class="character-card" data-character="CosmicCat" onclick="selectCharacter('CosmicCat')">CosmicCat 😺</div>
+        </div>
+        <button id="startButton" onclick="startSplash()" disabled>Start Adventure</button>
+    </div>
+    <div class="container" style="display: none;">
+        <h1>CyberSafe Adventures</h1>
+        <div id="badge" class="badge">🦊</div>
+        <div id="difficulty">
+            <p>Select Difficulty:</p>
+            <button onclick="startGame('easy')">Easy</button>
+            <button onclick="startGame('medium')">Medium</button>
+            <button onclick="startGame('hard')">Hard</button>
+        </div>
+        <div id="game" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <p id="scenarioText"></p>
+            <hr>
+            <p id="timer">Time left: 30s</p>
+            <p id="streak">Streak: 0</p>
+            <button onclick="useHint()">Use Hint (-5 points, 1 left)</button>
+        </div>
+        <div id="miniGame" style="display: none;">
+            <h2>Memory Match Challenge!</h2>
+            <p>Match the icons to earn bonus points!</p>
+            <p id="miniGameTimer">Time left: 60s</p>
+            <p id="miniGameScore">Bonus Score: 0</p>
+        </div>
+        <div id="passwordTester" style="display: none;">
+            <p>Test a password's strength:</p>
+            <input type="text" id="passwordInput" placeholder="Enter a password">
+            <button onclick="testPassword()">Test</button>
+            <p id="passwordResult"></p>
+        </div>
+        <div id="rewardScreen" style="display: none;">
+            <h2>Congratulations, Cyber Hero!</h2>
+            <p id="finalScore"></p>
+            <p>Badges Earned:</p>
+            <ul id="badgesList"></ul>
+            <button class="restart-button" onclick="confirmRestart()">Play Again</button>
+        </div>
+        <div id="feedback"></div>
+        <div id="leaderboard">
+            <h2>Leaderboard</h2>
+            <ul id="highScores"></ul>
+        </div>
+        <div class="sound-toggle">
+            <label><input type="checkbox" id="soundToggle" checked> Enable Sound</label>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let scenarioIndex = 0;
+        let quizIndex = 0;
+        let quizScore = 0;
+        let miniGameScore = 0;
+        let difficulty = 'easy';
+        let timeLeft = 30;
+        let miniGameTimeLeft = 60;
+        let timerInterval;
+        let miniGameTimerInterval;
+        let streak = 0;
+        let hintsUsed = 0;
+        let playerName = '';
+        let selectedCharacter = '';
+        let badges = [];
+        let stateHistory = [];
+        let isQuizMode = false;
+        let isMiniGameMode = false;
+        let passwordAttempts = 0;
+        const maxHints = 1;
+        const maxPasswordAttempts = 4;
+        const clickSound = new Audio('https://cdn.pixabay.com/audio/2023/02/07/audio_2954e3b7a5.mp3');
+        const winSound = new Audio('https://cdn.pixabay.com/audio/2023/07/27/audio_1b2a74f05b.mp3');
+        const badgeSound = new Audio('https://cdn.pixabay.com/audio/2023/03/25/audio_1b2a74f05b.mp3');
+        const miniGameWinSound = new Audio('https://cdn.pixabay.com/audio/2023/08/07/audio_1b2a74f05b.mp3');
+
+        const characterBadges = {
+            CyberFox: '🦊',
+            NeonPanda: '🐼',
+            StarBot: '🤖',
+            CosmicCat: '😺'
+        };
+
+        const scenarios = [
+            {
+                text: "You get an email saying you've won a lifetime supply of pizza, but you have to click a link to claim it. What do you do?",
+                displayText: 'You get an email saying you\'ve won a lifetime supply of pizza, but you have to click a link to claim it. What do you do? <span class="tooltip" data-tooltip="Phished: When bad people trick you into giving them your info.">Phished</span> means getting tricked online.',
+                options: [
+                    { text: "Click the link", result: "You’ve been phished! This could install <span class='tooltip' data-tooltip='Malware: Bad software that harms your computer.'>malware</span>. (-10 points)", points: -10 },
+                    { text: "Delete the email", result: "Good choice! Deleting avoids the risk. (+5 points)", points: 5 },
+                    { text: "Report it", result: "Best move! Reporting helps stop scams. (+10 points)", points: 10, badge: "Phishing Pro 🐟" },
+                    { text: "Reply to verify", result: "Risky! Engaging with scams can expose you. (-5 points)", points: -5 }
+                ],
+                hint: "Check the sender’s email address before acting."
+            },
+            {
+                text: "Your best friend wants to post a funny photo of you on social media. Should you let them?",
+                displayText: 'Your best friend wants to post a funny photo of you on <span class="tooltip" data-tooltip="Social media: Websites like Instagram or TikTok where you share posts.">social media</span>. Should you let them?',
+                options: [
+                    { text: "Share the photo", result: "Not safe! Sharing photos can be risky. (-5 points)", points: -5 },
+                    { text: "Say no", result: "Great! Keeping photos private is safer. (+10 points)", points: 10 },
+                    { text: "Ask an adult first", result: "Best choice! Always check with an adult. (+10 points)", points: 10, badge: "Privacy Protector 🔒" },
+                    { text: "Share but make it private", result: "Better, but still risky! Ask an adult. (+5 points)", points: 5 }
+                ],
+                hint: "Always ask an adult before sharing photos online."
+            },
+            {
+                text: "A pop-up shows a dancing virus saying your computer is infected and you need to pay to fix it. What do you do?",
+                displayText: 'A pop-up shows a dancing <span class="tooltip" data-tooltip="Virus: A bad program that can harm your computer.">virus</span> saying your computer is infected and you need to pay to fix it. What do you do? A <span class="tooltip" data-tooltip="Pop-up: A small window that appears on your screen.">pop-up</span> is a sudden message.',
+                options: [
+                    { text: "Pay the money", result: "Bad idea! This is a scam. (-15 points)", points: -15 },
+                    { text: "Close the pop-up", result: "Good move! Closing avoids trouble. (+5 points)", points: 5 },
+                    { text: "Run an antivirus scan", result: "Smart! Check with trusted <span class='tooltip' data-tooltip='Antivirus: Software that protects your computer from bad programs.'>antivirus</span> software. (+10 points)", points: 10, badge: "Virus Vanquisher 🛡️" },
+                    { text: "Restart your computer", result: "Okay, but always scan for threats. (+5 points)", points: 5 }
+                ],
+                hint: "Pop-ups asking for money are often scams."
+            },
+            {
+                text: "You get a text from an unknown number saying you won a free toy, but you need to click a link. What do you do?",
+                displayText: 'You get a text from an unknown number saying you won a free toy, but you need to click a link. What do you do?',
+                options: [
+                    { text: "Click the link", result: "Not safe! Unknown links can be dangerous. (-5 points)", points: -5 },
+                    { text: "Ignore the text", result: "Good job! Ignoring keeps you safe. (+10 points)", points: 10 },
+                    { text: "Tell an adult", result: "Best choice! Adults can check it out. (+10 points)", points: 10, badge: "Text Tactician 📱" },
+                    { text: "Reply to ask who it is", result: "Risky! Don’t reply to strangers. (-5 points)", points: -5 }
+                ],
+                hint: "Never click links from unknown numbers."
+            },
+            {
+                text: "You need a password for your new favorite game. What kind do you pick?",
+                displayText: 'You need a <span class="tooltip" data-tooltip="Password: A secret word you use to log into things like games.">password</span> for your new favorite game. What kind do you pick?',
+                options: [
+                    { text: "Your name", result: "Not safe! Names are easy to guess. (-5 points)", points: -5 },
+                    { text: "A mix of letters, numbers, symbols", result: "Great! Strong passwords are tough to crack. (+10 points)", points: 10, badge: "Password Wizard 🔑" },
+                    { text: "Your birthday", result: "Risky! Birthdays are easy to find. (-5 points)", points: -5 },
+                    { text: "Ask an adult for help", result: "Best choice! Adults can make strong passwords. (+10 points)", points: 10 }
+                ],
+                hint: "Strong passwords use letters, numbers, and symbols."
+            },
+            {
+                text: "A website offers a free pet robot if you enter your email and password. What do you do?",
+                displayText: 'A website offers a free <span class="tooltip" data-tooltip="App: A program you use on your phone or computer, like a game.">pet robot</span> if you enter your email and password. What do you do?',
+                options: [
+                    { text: "Enter your details", result: "Risky! It might steal your info. (-10 points)", points: -10 },
+                    { text: "Check the website address", result: "Smart! Verify the site’s <span class='tooltip' data-tooltip='URL: The web address you see in your browser, like www.example.com.'>URL</span>. (+10 points)", points: 10 },
+                    { text: "Use a password manager", result: "Great! Unique passwords are safer. (+15 points)", points: 15, badge: "Site Sleuth 🌐" },
+                    { text: "Close the tab", result: "Safe choice! Avoid unknown sites. (+5 points)", points: 5 }
+                ],
+                hint: "Always check the website’s address and use unique passwords."
+            },
+            {
+                text: "You see a cool game ad that asks to install an app from an unknown site. What do you do?",
+                displayText: 'You see a cool <span class="tooltip" data-tooltip="App: A program you use on your phone or computer, like a game.">game ad</span> that asks to install an app from an unknown site. What do you do?',
+                options: [
+                    { text: "Install the app", result: "Dangerous! Unknown apps can have malware. (-10 points)", points: -10 },
+                    { text: "Check the app store", result: "Smart! Official app stores are safer. (+10 points)", points: 10, badge: "App Adventurer 📲" },
+                    { text: "Ask an adult", result: "Best choice! Adults can verify safety. (+10 points)", points: 10 },
+                    { text: "Click 'Learn More'", result: "Risky! Avoid unknown links. (-5 points)", points: -5 }
+                ],
+                hint: "Only download apps from trusted app stores."
+            },
+            {
+                text: "A friend sends you a game link via chat, but it looks weird. What do you do?",
+                displayText: 'A friend sends you a <span class="tooltip" data-tooltip="App: A program you use on your phone or computer, like a game.">game link</span> via chat, but it looks weird. What do you do?',
+                options: [
+                    { text: "Click the link", result: "Not safe! It could be a hack. (-10 points)", points: -10 },
+                    { text: "Ask your friend in person", result: "Great! Verify with your friend. (+10 points)", points: 10, badge: "Chat Champion 💬" },
+                    { text: "Ignore it", result: "Good move! Ignoring is safe. (+5 points)", points: 5 },
+                    { text: "Reply to the link", result: "Risky! Don’t engage with odd links. (-5 points)", points: -5 }
+                ],
+                hint: "Always verify strange links with your friend directly."
+            }
+        ];
+
+        const quizQuestions = [
+            {
+                text: "Firewalls keep bad guys out of your computer network.",
+                displayText: '<span class="tooltip" data-tooltip="Firewalls: Tools that keep bad people out of your computer network.">Firewalls</span> keep bad guys out of your computer network.',
+                answer: true,
+                feedback: "Yay! Firewalls are like guards for your network.",
+                badge: "Firewall Fan 🛡️"
+            },
+            {
+                text: "It’s okay to use the same password for everything.",
+                displayText: 'It’s okay to use the same <span class="tooltip" data-tooltip="Password: A secret word you use to log into things.">password</span> for everything.',
+                answer: false,
+                feedback: "Oops! Using the same password makes it easier for hackers."
+            },
+            {
+                text: "Phishing only happens through emails.",
+                displayText: '<span class="tooltip" data-tooltip="Phishing: Tricks to steal your info, like fake emails or texts.">Phishing</span> only happens through emails.',
+                answer: false,
+                feedback: "Nope! Phishing can happen via texts or fake websites too."
+            },
+            {
+                text: "Strong passwords should be long and tricky.",
+                displayText: 'Strong passwords should be long and tricky.',
+                answer: true,
+                feedback: "Awesome! Long passwords with numbers and symbols are best.",
+                badge: "Password Pro 🔑"
+            },
+            {
+                text: "You should tell an adult if you see something weird online.",
+                displayText: 'You should tell an adult if you see something weird online.',
+                answer: true,
+                feedback: "Great! Adults can help keep you safe online.",
+                badge: "Safety Star ⭐"
+            },
+            {
+                text: "Clicking 'You won!' ads is always safe.",
+                displayText: 'Clicking <span class="tooltip" data-tooltip="Ads: Pop-up messages trying to sell you something or trick you.">\'You won!\' ads</span> is always safe.',
+                answer: false,
+                feedback: "Uh-oh! Those ads are often tricks to steal your info."
+            },
+            {
+                text: "A VPN makes your internet connection safer.",
+                displayText: 'A <span class="tooltip" data-tooltip="VPN: A tool that hides your internet activity to keep it safe.">VPN</span> makes your internet connection safer.',
+                answer: true,
+                feedback: "Nice! VPNs hide your online activity.",
+                badge: "VPN Voyager 🌐"
+            },
+            {
+                text: "Two-factor authentication is less secure than just a password.",
+                displayText: '<span class="tooltip" data-tooltip="Two-factor authentication: Using two ways to prove it’s you, like a password and a code sent to your phone.">Two-factor authentication</span> is less secure than just a password.',
+                answer: false,
+                feedback: "Nope! Two-factor adds extra security."
+            }
+        ];
+
+        const miniGameCards = [
+            { id: 1, icon: '🔒', color: '#00ffcc' },
+            { id: 1, icon: '🔒', color: '#00ffcc' },
+            { id: 2, icon: '🛡️', color: '#cc00ff' },
+            { id: 2, icon: '🛡️', color: '#cc00ff' },
+            { id: 3, icon: '🦠', color: '#ff0066' },
+            { id: 3, icon: '🦠', color: '#ff0066' },
+            { id: 4, icon: '🔑', color: '#00ff88' },
+            { id: 4, icon: '🔑', color: '#00ff88' },
+            { id: 5, icon: '🔥', color: '#ffaa00' },
+            { id: 5, icon: '🔥', color: '#ffaa00' },
+            { id: 6, icon: '🌐', color: '#00aaff' },
+            { id: 6, icon: '🌐', color: '#00aaff' },
+            { id: 7, icon: '☁️', color: '#ff00aa' },
+            { id: 7, icon: '☁️', color: '#ff00aa' },
+            { id: 8, icon: '⭐', color: '#aaff00' },
+            { id: 8, icon: '⭐', color: '#aaff00' }
+        ];
+
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let matchesFound = 0;
+
+        // Initialize leaderboard and particles
+        displayLeaderboard();
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 60, density: { enable: true, value_area: 800 } },
+                color: { value: ['#00ffcc', '#cc00ff', '#ff0066'] },
+                shape: { type: 'circle' },
+                opacity: { value: 0.3, random: true },
+                size: { value: 2.5, random: true },
+                line_linked: { enable: false },
+                move: { enable: true, speed: 1.5, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                modes: { repulse: { distance: 80, duration: 0.3 }, push: { particles_nb: 3 } }
+            }
+        });
+
+        function validateName() {
+            const nameInput = document.getElementById('playerName').value.trim();
+            const startButton = document.getElementById('startButton');
+            startButton.disabled = nameInput.length < 2 || !selectedCharacter;
+        }
+
+        function selectCharacter(character) {
+            selectedCharacter = character;
+            document.querySelectorAll('.character-card').forEach(card => card.classList.remove('selected'));
+            document.querySelector(`.character-card[data-character="${character}"]`).classList.add('selected');
+            document.getElementById('badge').innerText = characterBadges[character];
+            validateName();
+            playSound(clickSound);
+        }
+
+        function startSplash() {
+            try {
+                const nameInput = document.getElementById('playerName').value.trim();
+                if (nameInput.length < 2) {
+                    alert('Please enter a name with at least 2 characters.');
+                    return;
+                }
+                if (!selectedCharacter) {
+                    alert('Please choose a character!');
+                    return;
+                }
+                playerName = nameInput.substring(0, 20);
+                const splash = document.getElementById('splash');
+                const container = document.querySelector('.container');
+                splash.classList.add('fade-out');
+                playSound(clickSound);
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    container.style.display = 'flex';
+                }, 1000);
+            } catch (e) {
+                console.error('Error in startSplash:', e);
+            }
+        }
+
+        function startGame(selectedDifficulty) {
+            try {
+                console.log('Starting game with difficulty:', selectedDifficulty);
+                difficulty = selectedDifficulty;
+                resetGameState();
+                document.getElementById('difficulty').style.display = 'none';
+                document.getElementById('game').style.display = 'block';
+                document.getElementById('feedback').innerHTML = '';
+                document.getElementById('passwordTester').style.display = 'none';
+                document.getElementById('miniGame').style.display = 'none';
+                document.getElementById('rewardScreen').style.display = 'none';
+                showScenario();
+                playSound(clickSound);
+            } catch (e) {
+                console.error('Error in startGame:', e);
+            }
+        }
+
+        function resetGameState() {
+            console.log('Resetting game state');
+            score = 0;
+            scenarioIndex = 0;
+            quizIndex = 0;
+            quizScore = 0;
+            miniGameScore = 0;
+            streak = 0;
+            hintsUsed = 0;
+            badges = [];
+            stateHistory = [];
+            isQuizMode = false;
+            isMiniGameMode = false;
+            passwordAttempts = 0;
+            matchesFound = 0;
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+            clearInterval(timerInterval);
+            clearInterval(miniGameTimerInterval);
+            document.body.classList.remove('progress-50', 'progress-100');
+        }
+
+        function showScenario() {
+            try {
+                console.log('Showing scenario:', scenarioIndex);
+                clearInterval(timerInterval);
+                timeLeft = difficulty === 'hard' ? 15 : difficulty === 'medium' ? 20 : 30;
+                const scenario = scenarios[scenarioIndex];
+                const gameDiv = document.getElementById('game');
+                gameDiv.classList.add('slide-in');
+                setTimeout(() => gameDiv.classList.remove('slide-in'), 600);
+                gameDiv.innerHTML = `<div class="progress-bar"><div class="progress" id="progress"></div></div>
+                                    <p id="scenarioText">${scenario.displayText}</p>
+                                    <hr>
+                                    <p id="timer">Time left: ${timeLeft}s</p>
+                                    <p id="streak">Streak: ${streak}</p>
+                                    <button onclick="useHint()" ${hintsUsed >= maxHints ? 'disabled' : ''}>Use Hint (-5 points, ${maxHints - hintsUsed} left)</button>`;
+                scenario.options.forEach((option) => {
+                    const btn = document.createElement('button');
+                    btn.innerHTML = option.text;
+                    btn.onclick = () => selectOption(option);
+                    gameDiv.appendChild(btn);
+                });
+                const bottomButtonsDiv = document.createElement('div');
+                bottomButtonsDiv.className = 'bottom-buttons';
+                const backButton = document.createElement('button');
+                backButton.className = 'back-button';
+                backButton.innerText = 'Back';
+                backButton.onclick = goBack;
+                backButton.disabled = stateHistory.length === 0;
+                bottomButtonsDiv.appendChild(backButton);
+                gameDiv.appendChild(bottomButtonsDiv);
+                updateProgress();
+                startTimer();
+            } catch (e) {
+                console.error('Error in showScenario:', e);
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const timerElement = document.getElementById('timer');
+                timerElement.innerText = `Time left: ${timeLeft}s`;
+                if (timeLeft <= 5) {
+                    timerElement.classList.add('low-time');
+                } else {
+                    timerElement.classList.remove('low-time');
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    selectOption({ result: 'Time’s up! You missed the chance to act. (-5 points)', points: -5 });
+                }
+            }, 1000);
+        }
+
+        function updateProgress() {
+            const progress = ((scenarioIndex + (isQuizMode ? scenarios.length : 0) + quizIndex + 1) / (scenarios.length + quizQuestions.length)) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            if (progress >= 50) {
+                document.body.classList.add('progress-50');
+            }
+            if (progress >= 100) {
+                document.body.classList.add('progress-100');
+            }
+        }
+
+        function useHint() {
+            if (hintsUsed >= maxHints) return;
+            hintsUsed++;
+            score -= 5;
+            const scenario = scenarios[scenarioIndex];
+            document.getElementById('feedback').innerHTML = `<p>Hint: ${scenario.hint}</p><p>Score: ${score}</p>`;
+            document.getElementById('game').querySelector('button[onclick="useHint()"]').innerText = `Use Hint (-5 points, ${maxHints - hintsUsed} left)`;
+            if (hintsUsed >= maxHints) {
+                document.getElementById('game').querySelector('button[onclick="useHint()"]').disabled = true;
+            }
+            playSound(clickSound);
+        }
+
+        function selectOption(option) {
+            clearInterval(timerInterval);
+            stateHistory.push({ score, streak, scenarioIndex, quizIndex, quizScore, miniGameScore, timeLeft, isQuizMode, isMiniGameMode, badges });
+            let points = option.points;
+            if (difficulty === 'medium') points *= 1.5;
+            if (difficulty === 'hard') points *= 2;
+            if (option.points > 0) {
+                streak++;
+                points *= (1 + streak * 0.1);
+            } else {
+                streak = 0;
+            }
+            score += Math.round(points);
+            if (option.badge && !badges.includes(option.badge)) {
+                badges.push(option.badge);
+                document.getElementById('feedback').innerHTML += `<p class="bounce">Badge Earned: ${option.badge}</p>`;
+                playSound(badgeSound);
+            }
+            document.getElementById('feedback').innerHTML = `<p>${option.result}</p><p>Score: ${score}</p><p>Streak: ${streak}</p>`;
+            if (option.points < 0) {
+                document.getElementById('feedback').classList.add('wrong');
+                setTimeout(() => document.getElementById('feedback').classList.remove('wrong'), 300);
+            } else {
+                document.getElementById('feedback').classList.add('correct');
+                setTimeout(() => document.getElementById('feedback').classList.remove('correct'), 800);
+            }
+            playSound(clickSound);
+            scenarioIndex++;
+            setTimeout(() => {
+                if (scenarioIndex < scenarios.length) {
+                    startMiniGame();
+                } else {
+                    startQuiz();
+                }
+            }, 2000);
+        }
+
+        function startMiniGame() {
+            console.log('Starting mini-game');
+            isMiniGameMode = true;
+            miniGameScore = 0;
+            matchesFound = 0;
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+            miniGameTimeLeft = 60;
+            stateHistory.push({ score, streak, scenarioIndex, quizIndex, quizScore, miniGameScore, timeLeft, matchesFound, isMiniGameMode, badges });
+            const miniGameDiv = document.getElementById('miniGame');
+            miniGameDiv.style.display = 'grid';
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('feedback').innerHTML = '<p>Match the icons to earn bonus points!</p>';
+            shuffleCards();
+        }
+
+        function shuffleCards() {
+            const shuffledCards = [...miniGameCards].sort(() => Math.random() - 0.5);
+            const miniGameDiv = document.getElementById('miniGame');
+            miniGameDiv.innerHTML = `
+                <h2>Memory Match Challenge!</h2>
+                <p>Match the icons to earn bonus points!</p>
+                <p id="miniGameTimer">Time left: ${miniGameTimeLeft}s</p>
+                <p id="miniGameScore">Bonus Score: ${miniGameScore}</p>
+            `;
+            shuffledCards.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                cardDiv.dataset.id = index;
+                cardDiv.dataset.cardId = card.id;
+                cardDiv.style.backgroundColor = card.color;
+                cardDiv.innerHTML = `<span>${card.icon}</span>`;
+                cardDiv.onclick = () => flipCard(cardDiv);
+                miniGameDiv.appendChild(cardDiv);
+            });
+            const bottomButtonsDiv = document.createElement('div');
+            bottomButtonsDiv.className = 'bottom-buttons';
+            const backButton = document.createElement('button');
+            backButton.className = 'back-button';
+            backButton.innerText = 'Back';
+            backButton.onclick = goBack;
+            backButton.disabled = stateHistory.length === 0;
+            bottomButtonsDiv.appendChild(backButton);
+            miniGameDiv.appendChild(bottomButtonsDiv);
+            startMiniGameTimer();
+        }
+
+        function startMiniGameTimer() {
+            miniGameTimerInterval = setInterval(() => {
+                miniGameTimeLeft--;
+                document.getElementById('miniGameTimer').innerText = `Time left: ${miniGameTimeLeft}s`;
+                if (miniGameTimeLeft <= 5) {
+                    document.getElementById('miniGameTimer').classList.add('low-time');
+                } else {
+                    document.getElementById('miniGameTimer').classList.remove('low-time');
+                }
+                if (miniGameTimeLeft <= 0 || matchesFound === miniGameCards.length / 2) {
+                    clearInterval(miniGameTimerInterval);
+                    endMiniGame();
+                }
+            }, 1000);
+        }
+
+        function flipCard(card) {
+            if (lockBoard || card === firstCard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            card.classList.add('flipped');
+            playSound(clickSound);
+            if (!firstCard) {
+                firstCard = card;
+            } else {
+                secondCard = card;
+                lockBoard = true;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const isMatch = firstCard.dataset.cardId === secondCard.dataset.cardId;
+            if (isMatch) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                miniGameScore += 5;
+                matchesFound++;
+                document.getElementById('miniGameScore').innerText = `Bonus Score: ${miniGameScore}`;
+                playSound(badgeSound);
+                if (matchesFound === miniGameCards.length / 2) {
+                    clearInterval(miniGameTimerInterval);
+                    if (!badges.includes('Memory Master 🧠')) {
+                        badges.push('Memory Master 🧠');
+                        document.getElementById('feedback').innerHTML += `<p class="bounce">Badge Earned: Memory Master 🧠</p>`;
+                        playSound(badgeSound);
+                    }
+                    setTimeout(endMiniGame, 1000);
+                } else {
+                    resetBoard();
+                }
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    resetBoard();
+                }, 800);
+            }
+        }
+
+        function resetBoard() {
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+        }
+
+        function endMiniGame() {
+            console.log('Ending mini-game, score:', miniGameScore);
+            score += miniGameScore;
+            document.getElementById('miniGame').style.display = 'none';
+            document.getElementById('feedback').innerHTML = `<p>Mini-Game Complete! Bonus Score: ${miniGameScore}</p><p>Total Score: ${score}</p>`;
+            playSound(miniGameWinSound);
+            setTimeout(startQuiz, 2000);
+        }
+
+        function startQuiz() {
+            console.log('Starting quiz');
+            isQuizMode = true;
+            quizIndex = 0;
+            quizScore = 0;
+            stateHistory.push({ score, streak, scenarioIndex, quizIndex, quizScore, miniGameScore, timeLeft, isQuizMode, isMiniGameMode, badges });
+            const gameDiv = document.getElementById('game');
+            gameDiv.style.display = 'block';
+            gameDiv.innerHTML = '<h2>Quick Quiz: Test Your Knowledge!</h2>';
+            document.getElementById('feedback').innerHTML = '<p>Answer these true/false questions to boost your score!</p>';
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            console.log('Showing quiz question:', quizIndex);
+            const question = quizQuestions[quizIndex];
+            const gameDiv = document.getElementById('game');
+            gameDiv.innerHTML = `<h2>Quick Quiz: Test Your Knowledge!</h2>
+                                <p>${question.displayText}</p>
+                                <hr>`;
+            const trueBtn = document.createElement('button');
+            trueBtn.innerText = 'True';
+            trueBtn.onclick = () => selectQuizAnswer(true);
+            gameDiv.appendChild(trueBtn);
+            const falseBtn = document.createElement('button');
+            falseBtn.innerText = 'False';
+            falseBtn.onclick = () => selectQuizAnswer(false);
+            gameDiv.appendChild(falseBtn);
+            const bottomButtonsDiv = document.createElement('div');
+            bottomButtonsDiv.className = 'bottom-buttons';
+            const backButton = document.createElement('button');
+            backButton.className = 'back-button';
+            backButton.innerText = 'Back';
+            backButton.onclick = goBack;
+            backButton.disabled = stateHistory.length === 0;
+            bottomButtonsDiv.appendChild(backButton);
+            gameDiv.appendChild(bottomButtonsDiv);
+            gameDiv.classList.add('slide-in');
+            setTimeout(() => gameDiv.classList.remove('slide-in'), 600);
+            updateProgress();
+        }
+
+        function selectQuizAnswer(userAnswer) {
+            stateHistory.push({ score, streak, scenarioIndex, quizIndex, quizScore, miniGameScore, timeLeft, isQuizMode, isMiniGameMode, badges });
+            const question = quizQuestions[quizIndex];
+            const isCorrect = userAnswer === question.answer;
+            if (isCorrect) {
+                quizScore += 5;
+                if (question.badge && !badges.includes(question.badge)) {
+                    badges.push(question.badge);
+                    document.getElementById('feedback').innerHTML += `<p class="bounce">Badge Earned: ${question.badge}</p>`;
+                    playSound(badgeSound);
+                }
+            }
+            document.getElementById('feedback').innerHTML = `<p>${question.feedback}</p><p>Quiz Score: ${quizScore}</p>`;
+            if (!isCorrect) {
+                document.getElementById('feedback').classList.add('wrong');
+                setTimeout(() => document.getElementById('feedback').classList.remove('wrong'), 300);
+            } else {
+                document.getElementById('feedback').classList.add('correct');
+                setTimeout(() => document.getElementById('feedback').classList.remove('correct'), 800);
+            }
+            playSound(clickSound);
+            quizIndex++;
+            setTimeout(() => {
+                if (quizIndex < quizQuestions.length) {
+                    showQuizQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 2000);
+        }
+
+        function goBack() {
+            if (stateHistory.length === 0) return;
+            console.log('Going back, history length:', stateHistory.length);
+            clearInterval(timerInterval);
+            clearInterval(miniGameTimerInterval);
+            const previousState = stateHistory.pop();
+            score = previousState.score;
+            streak = previousState.streak;
+            scenarioIndex = previousState.scenarioIndex;
+            quizIndex = previousState.quizIndex;
+            quizScore = previousState.quizScore;
+            miniGameScore = previousState.miniGameScore;
+            timeLeft = previousState.timeLeft;
+            isQuizMode = previousState.isQuizMode;
+            isMiniGameMode = previousState.isMiniGameMode;
+            badges = previousState.badges;
+            matchesFound = previousState.matchesFound || 0;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('miniGame').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            playSound(clickSound);
+            if (isMiniGameMode) {
+                startMiniGame();
+            } else if (isQuizMode) {
+                showQuizQuestion();
+            } else {
+                showScenario();
+            }
+        }
+
+        function endQuiz() {
+            console.log('Ending quiz, total score:', score + quizScore + miniGameScore);
+            score += quizScore;
+            const gameDiv = document.getElementById('game');
+            gameDiv.style.display = 'none';
+            const rewardScreen = document.getElementById('rewardScreen');
+            rewardScreen.style.display = 'block';
+            let message = score >= 120 ? 'Cyber Hero Legend!' : score >= 80 ? 'Cyber Hero!' : 'Future Cyber Hero!';
+            if (score >= 80 && !badges.includes('Cyber Hero 🦸')) {
+                badges.push('Cyber Hero 🦸');
+                playSound(badgeSound);
+            }
+            document.getElementById('finalScore').innerHTML = `
+                <p>Main Game Score: ${score - quizScore - miniGameScore}</p>
+                <p>Mini-Game Score: ${miniGameScore}</p>
+                <p>Quiz Score: ${quizScore}</p>
+                <p>Total Score: ${score}</p>
+                <p>${message}</p>
+                <p>Fun fact: 80% of hacks involve weak passwords!</p>
+            `;
+            document.getElementById('badgesList').innerHTML = badges.map(badge => `<li>${badge}</li>`).join('');
+            document.getElementById('passwordTester').style.display = 'block';
+            updateLeaderboard(score);
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#00ffcc', '#cc00ff', '#ff0066'] });
+            playSound(winSound);
+        }
+
+        function confirmRestart() {
+            if (confirm('Restart game? You’ll lose progress and return to the splash screen.')) {
+                console.log('Restart confirmed, resetting to splash screen');
+                try {
+                    resetGameState();
+                    const gameDiv = document.getElementById('game');
+                    const difficultyDiv = document.getElementById('difficulty');
+                    const passwordTester = document.getElementById('passwordTester');
+                    const miniGameDiv = document.getElementById('miniGame');
+                    const rewardScreen = document.getElementById('rewardScreen');
+                    const feedbackDiv = document.getElementById('feedback');
+                    const splash = document.getElementById('splash');
+                    const container = document.querySelector('.container');
+                    const playerNameInput = document.getElementById('playerName');
+                    const startButton = document.getElementById('startButton');
+                    gameDiv.style.display = 'none';
+                    difficultyDiv.style.display = 'block';
+                    passwordTester.style.display = 'none';
+                    miniGameDiv.style.display = 'none';
+                    rewardScreen.style.display = 'none';
+                    feedbackDiv.innerHTML = '';
+                    splash.style.display = 'flex';
+                    splash.style.opacity = '1';
+                    splash.classList.remove('fade-out');
+                    container.style.display = 'none';
+                    playerNameInput.value = '';
+                    startButton.disabled = true;
+                    document.querySelectorAll('.character-card').forEach(card => card.classList.remove('selected'));
+                    selectedCharacter = '';
+                    document.getElementById('badge').innerText = '🦊';
+                    playSound(clickSound);
+                } catch (e) {
+                    console.error('Error in confirmRestart:', e);
+                }
+            }
+        }
+
+        function testPassword() {
+            if (passwordAttempts >= maxPasswordAttempts) return;
+            passwordAttempts++;
+            console.log('Password attempt:', passwordAttempts);
+            const password = document.getElementById('passwordInput').value;
+            let strength = 'Weak';
+            let feedback = [];
+            if (password.length > 12) feedback.push('Good length (>12 characters).');
+            else feedback.push('Too short (<12 characters).');
+            if (/[A-Z]/.test(password)) feedback.push('Has uppercase letters.');
+            else feedback.push('Needs uppercase letters.');
+            if (/[0-9]/.test(password)) feedback.push('Has numbers.');
+            else feedback.push('Needs numbers.');
+            if (/[!@#$%^&*]/.test(password)) feedback.push('Has special characters.');
+            else feedback.push('Needs special characters.');
+            if (password.length > 12 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[!@#$%^&*]/.test(password)) {
+                strength = 'Strong';
+                if (!badges.includes('Password Guru 🔐')) {
+                    badges.push('Password Guru 🔐');
+                    document.getElementById('passwordResult').innerHTML += `<p class="bounce">Badge Earned: Password Guru 🔐</p>`;
+                    playSound(badgeSound);
+                }
+            } else if (password.length > 8) {
+                strength = 'Medium';
+            }
+            document.getElementById('passwordResult').innerHTML = `Password Strength: ${strength}<br>${feedback.join('<br>')}<br>Attempts left: ${maxPasswordAttempts - passwordAttempts}`;
+            playSound(clickSound);
+            if (passwordAttempts >= maxPasswordAttempts) {
+                const passwordTester = document.getElementById('passwordTester');
+                passwordTester.innerHTML = `
+                    <p class="credits">THANK YOU AND STAY SAFE</p>
+                    <p class="credits">BY <span>GEORGE NDUNGU</span> AND <span>RYAN MAINA</span></p>
+                    <p class="credits">© 2025</p>
+                    <button class="restart-button" onclick="confirmRestart()">Restart</button>
+                `;
+            }
+        }
+
+        function updateLeaderboard(totalScore) {
+            let scores = JSON.parse(localStorage.getItem('highScores')) || [];
+            scores.push({ name: playerName, score: totalScore, difficulty, character: selectedCharacter, badges: badges.length, date: new Date().toLocaleString() });
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, 5);
+            localStorage.setItem('highScores', JSON.stringify(scores));
+            displayLeaderboard();
+        }
+
+        function displayLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('highScores')) || [];
+            const highScoresList = document.getElementById('highScores');
+            highScoresList.innerHTML = scores.map(s => `<li>${s.name} (${s.character}): ${s.score} - ${s.difficulty} - ${s.badges} Badges - ${s.date}</li>`).join('');
+        }
+
+        function playSound(sound) {
+            if (document.getElementById('soundToggle').checked) {
+                sound.play().catch(e => console.log('Sound play failed:', e));
+            }
+        }
+    </script>
+</body>
+</html>
